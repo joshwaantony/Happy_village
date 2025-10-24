@@ -1,0 +1,162 @@
+// import { create } from "zustand";
+// import { getAllPanchayathCounts, getWardDetails } from "../api/HomeApi";
+
+// const useHomeStore = create((set) => ({
+//   panchayathData: [],
+//   loading: false,
+//   error: null,
+
+//   // Function to fetch panchayath data
+//   fetchPanchayathData: async () => {
+//     set({ loading: true, error: null });
+
+//     try {
+//       const data = await getAllPanchayathCounts();
+//       set({ panchayathData: data });
+//     } catch (err) {
+//       set({ error: err.message || "Unable to load Panchayath data" });
+//     } finally {
+//       set({ loading: false });
+//     }
+//   },
+
+
+
+
+
+//   wardData: [],
+//   loading: false,
+//   error: null,
+
+//   // Fetch ward data based on Panchayath name
+//   fetchWardData: async (panchayathName) => {
+//     set({ loading: true, error: null });
+
+//     try {
+//       const data = await getWardDetails(panchayathName);
+//       set({ wardData: data });
+//     } catch (err) {
+//       set({ error: err.message || "Unable to load ward data" });
+//     } finally {
+//       set({ loading: false });
+//     }
+//   },
+
+
+
+
+
+
+
+// }));
+
+// export default useHomeStore;
+
+
+
+
+
+import { create } from "zustand";
+import { 
+  getAllPanchayathCounts, 
+  getWardDetails, 
+  getAllHouseDetails, 
+  getHouseDetails,
+  getPersonalDetails
+} from "../api/HomeApi";
+
+// ✅ Zustand store combining Panchayath, Ward & House management
+const useHomeStore = create((set) => ({
+  // -------------------------------
+  // 🌿 Panchayath Data
+  // -------------------------------
+  panchayathData: [],
+  wardData: [],
+  houseData: [],
+  loading: false,
+  error: null,
+
+  singleHouse: null, // Single house detail
+  familyData: [], // Family members of that house
+
+  // ✅ Fetch all Panchayath counts
+  fetchPanchayathData: async () => {
+    set({ loading: true, error: null });
+    try {
+      const data = await getAllPanchayathCounts();
+      set({ panchayathData: data });
+    } catch (err) {
+      set({ error: err.message || "Unable to load Panchayath data" });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  // -------------------------------
+  // 🏘️ Ward Data
+  // -------------------------------
+  fetchWardData: async (panchayathName) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await getWardDetails(panchayathName);
+      set({ wardData: data });
+    } catch (err) {
+      set({ error: err.message || "Unable to load ward data" });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  // -------------------------------
+  // 🏠 House Data
+  // -------------------------------
+  fetchHouseData: async (panchayathName, wardNo, page = 1, limit = 10) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await getAllHouseDetails(panchayathName, wardNo, page, limit);
+      set({ houseData: data });
+    } catch (err) {
+      set({ error: err.message || "Unable to load house data" });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+
+    // ✅ Fetch single house + family details
+  fetchHouseDetails: async (houseId) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await getHouseDetails(houseId);
+      set({ singleHouse: data.house, familyData: data.family });
+    } catch (err) {
+      set({ error: err.message || "Unable to load house details" });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+
+
+   personalData: null,
+  loading: false,
+  error: null,
+
+  // ✅ Fetch Member Personal Information
+  fetchPersonalData: async (name, age, userid) => {
+    set({ loading: true, error: null });
+
+    try {
+      const data = await getPersonalDetails(name, age, userid);
+      set({ personalData: data });
+    } catch (err) {
+      set({
+        error: err.message || "Unable to fetch personal details",
+      });
+    } finally {
+      set({ loading: false });
+    }
+  },
+}));
+
+export default useHomeStore;
