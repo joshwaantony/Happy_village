@@ -250,12 +250,14 @@ function BasicDetails() {
 
   const { panchayathName, wardNo } = location.state || {};
 
-  const {  singleHouse,familyData, fetchHouseDetails, loading } = useHomeStore();
+  console.log(location.state)
+
+  const {  singleHouse,familyData, fetchIndividualHouseDetails, loading } = useHomeStore();
 
   console.log(singleHouse)
 
   useEffect(() => {
-    if (houseId) fetchHouseDetails(houseId);
+    if (houseId) fetchIndividualHouseDetails(houseId,wardNo);
   }, [houseId]);
 //   console.log(singleHouse);
   
@@ -264,12 +266,21 @@ function BasicDetails() {
     navigate(`/member/${personalId}`, { state: { name, age, userid } });
   }
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen text-xl font-semibold text-blue-600">
-        Loading house details...
-      </div>
-    );
+  // if (loading)
+  //   return (
+  //     <div className="flex justify-center items-center h-screen text-xl font-semibold text-blue-600">
+  //       Loading house details...
+  //     </div>
+  //   );
+
+  if (loading || !singleHouse) {
+  return (
+    <div className="flex justify-center items-center h-screen text-xl font-semibold text-blue-600">
+      Loading house details...
+    </div>
+  );
+}
+
 
   return (
     <div className="py-[25px] px-[50px] lg:px-[80px] xl:px-[100px]">

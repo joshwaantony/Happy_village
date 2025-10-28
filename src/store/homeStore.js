@@ -62,11 +62,14 @@ import {
   getWardDetails, 
   getAllHouseDetails, 
   getHouseDetails,
-  getPersonalDetails
+  getIndividualHouseDetails,
+  getPersonalDetails,
+  searchHouse
 } from "../api/HomeApi";
 
 // ✅ Zustand store combining Panchayath, Ward & House management
-const useHomeStore = create((set) => ({
+const 
+useHomeStore = create((set) => ({
   // -------------------------------
   // 🌿 Panchayath Data
   // -------------------------------
@@ -84,7 +87,7 @@ const useHomeStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const data = await getAllPanchayathCounts();
-      set({ panchayathData: data });
+      set({ panchayathData: data.data });
     } catch (err) {
       set({ error: err.message || "Unable to load Panchayath data" });
     } finally {
@@ -124,10 +127,12 @@ const useHomeStore = create((set) => ({
 
 
     // ✅ Fetch single house + family details
-  fetchHouseDetails: async (houseId) => {
+  fetchIndividualHouseDetails: async (houseId) => {
     set({ loading: true, error: null });
     try {
-      const data = await getHouseDetails(houseId);
+      const data = await getIndividualHouseDetails(houseId);
+      console.log(data,"uyguyguyguyg");
+      
       set({ singleHouse: data.house, familyData: data.family });
     } catch (err) {
       set({ error: err.message || "Unable to load house details" });
@@ -136,6 +141,40 @@ const useHomeStore = create((set) => ({
     }
   },
 
+
+
+
+    // 🏠 Fetch paginated house data
+  fetchHouseDetails: async (panchayathName, wardNo, page = 1, limit = 10) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await getHouseDetails(panchayathName, wardNo, page, limit);
+      set({
+        houseData: data.houses,
+        totalPages: data.totalPages || 1,
+        currentPage: data.currentPage || page,
+      });
+    } catch (err) {
+      set({ error: err.message || "Unable to load house data" });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  // 🔍 Smart Search (debounced)
+  searchHouseData: async (keyvalue, panchayathName, wardNo, page = 1, limit = 10) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await searchHouse(keyvalue, panchayathName, wardNo, page, limit);
+      console.log(data);
+      
+      set({ houseData: data });
+    } catch (err) {
+      set({ error: err.message || "Unable to search house data" });
+    } finally {
+      set({ loading: false });
+    }
+  },
 
 
    personalData: null,

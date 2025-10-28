@@ -13,6 +13,7 @@ import HouseDetails from './page/HouseDetails.jsx'
 import BasicDetails from './page/BasicDetails.jsx'
 import Members from './page/Members.jsx'
 import WardDatas from './page/WardDatas.jsx'
+import DemoReport from './page/DemoReport.jsx'
 const router = createBrowserRouter([
   {
     path:'/',
@@ -48,7 +49,10 @@ const router = createBrowserRouter([
       },
       {
         path:'member/:personalId', element:<Members/>
-      }
+      },
+       {
+        path:'demoReport', element:<DemoReport/>
+      },
 
 
     ]
